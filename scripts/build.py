@@ -4,7 +4,7 @@
     python3 scripts/build.py --pages-dev  # product links -> *.pages.dev (while custom domains are pending)
     npx wrangler pages deploy site --project-name aiseenlab-site --branch main
 
-No payment QR / WeChat, no images. Claims kept honest: Gemini-only engine, extension not on sale yet.
+No payment QR / WeChat. Only images: the AI Seen Lab brand files in brand/ (copied byte-for-byte). Claims kept honest: Gemini-only engine, extension not on sale yet.
 """
 import pathlib, shutil, sys
 
@@ -17,15 +17,21 @@ CONTACT = "go_with_prob@mail.grokbot.com"
 root = pathlib.Path(__file__).resolve().parents[1]
 out = root / "site"
 shutil.rmtree(out, ignore_errors=True); out.mkdir()
+BRAND = ["aiseenlab_icon.svg", "aiseenlab_icon.png", "aiseenlab_wordmark.svg", "aiseenlab_wordmark.png",
+         "favicon-16.png", "favicon-32.png", "apple-touch-icon.png", "favicon.ico"]
+(out / "brand").mkdir()
+for f in BRAND:
+    shutil.copyfile(root / "brand" / f, out / "brand" / f)
+shutil.copyfile(root / "brand" / "favicon.ico", out / "favicon.ico")      # browsers that ask for /favicon.ico
 
 CSS = """body{font:16px/1.65 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;margin:0;color:#111827;background:#fafafa}
 header,main,footer{max-width:960px;margin:0 auto;padding:0 20px}header{display:flex;justify-content:space-between;align-items:center;padding-top:18px;padding-bottom:18px}
-.brand{font-weight:800;font-size:20px;letter-spacing:.2px}.lang button{border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font:inherit;font-size:14px}
+.brand{display:inline-flex;align-items:center}.brand img{display:block;height:40px;width:auto}.lang button{border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:4px 12px;cursor:pointer;font:inherit;font-size:14px}
 h1{font-size:34px;line-height:1.25;margin:26px 0 10px}.lead{font-size:19px;color:#374151;max-width:740px}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin:34px 0}
 .card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:24px;display:flex;flex-direction:column}
 .card h2{margin:0 0 6px;font-size:22px}.tag{display:inline-block;font-size:13px;border-radius:999px;padding:2px 10px;margin-bottom:10px}
-.live{background:#dcfce7;color:#166534}.soon{background:#fef3c7;color:#92400e}.card ul{padding-left:20px;margin:8px 0 18px}.card li{margin:4px 0}
+.tag{align-self:flex-start}.live{background:#dcfce7;color:#166534}.soon{background:#fef3c7;color:#92400e}.card ul{padding-left:20px;margin:8px 0 18px}.card li{margin:4px 0}
 .btn{margin-top:auto;align-self:flex-start;display:inline-block;padding:10px 18px;border-radius:999px;background:#2563eb;color:#fff;text-decoration:none;font-weight:600}
 .muted{color:#6b7280;font-size:14px}footer{border-top:1px solid #e5e7eb;margin-top:40px;padding-top:18px;padding-bottom:40px}a{color:#2563eb}
 [data-lang]{display:none}html[lang=en] [data-lang=en],html[lang=zh-CN] [data-lang=zh]{display:block}"""
@@ -77,10 +83,17 @@ def foot(l, t):
 html = f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AI Seen Lab — AI Visibility Audit · X Engagement List</title>
 <meta name="description" content="AI Seen Lab: AI Visibility Audit (does Gemini recommend your store?) and X Engagement List (Chrome extension, coming soon).">
-<link rel="canonical" href="{SITE}/"><style>{CSS}</style>
+<link rel="canonical" href="{SITE}/">
+<link rel="icon" href="/brand/aiseenlab_icon.svg" type="image/svg+xml"><link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/brand/favicon-16.png" sizes="16x16" type="image/png"><link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<meta name="theme-color" content="#2F6FEB"><meta property="og:type" content="website"><meta property="og:site_name" content="AI Seen Lab">
+<meta property="og:title" content="AI Seen Lab — AI Visibility Audit · X Engagement List"><meta property="og:url" content="{SITE}/">
+<meta property="og:description" content="Small, honest tools for being seen online: AI Visibility Audit and X Engagement List.">
+<meta property="og:image" content="{SITE}/brand/aiseenlab_icon.png"><meta property="og:image:width" content="512"><meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="AI Seen Lab"><meta name="twitter:card" content="summary"><style>{CSS}</style>
 <script>(function(){{var p=null;try{{p=localStorage.getItem('asl_lang')}}catch(e){{}}if(!p)p=(navigator.language||'').toLowerCase().indexOf('zh')===0?'zh':'en';document.documentElement.lang=p==='zh'?'zh-CN':'en';}})();
 function setLang(l){{document.documentElement.lang=l==='zh'?'zh-CN':'en';try{{localStorage.setItem('asl_lang',l)}}catch(e){{}}}}</script></head>
-<body><header><div class="brand">AI Seen Lab</div><div class="lang"><button onclick="setLang('zh')">中文</button> <button onclick="setLang('en')">English</button></div></header>
+<body><header><a class="brand" href="/"><img src="/brand/aiseenlab_wordmark.svg" alt="AI Seen Lab" width="140" height="40"></a><div class="lang"><button onclick="setLang('zh')">中文</button> <button onclick="setLang('en')">English</button></div></header>
 <main>{block('en', T['en'])}{block('zh', T['zh'])}</main>
 <footer>{foot('en', T['en'])}{foot('zh', T['zh'])}<p class="muted">© 2026 AI Seen Lab</p></footer></body></html>
 """
@@ -92,5 +105,12 @@ function setLang(l){{document.documentElement.lang=l==='zh'?'zh-CN':'en';try{{lo
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 """)
 low = html.lower()
-assert "wechat" not in low and "微信" not in html and "qr" not in low and "<img" not in low, "forbidden content"
+import re as _re
+assert "wechat" not in low and "微信" not in html and "qr" not in low, "forbidden content"
+assert all(src.startswith("/brand/") for src in _re.findall(r'<img[^>]+src="([^"]+)"', html)), "only brand images"
+# every image shipped must be byte-identical to a committed brand file (no other picture can sneak in)
+brand_bytes = {(root / "brand" / f).read_bytes() for f in BRAND}
+for f in out.rglob("*"):
+    if f.is_file() and f.suffix.lower() in (".png", ".svg", ".ico", ".jpg", ".jpeg", ".gif", ".webp"):
+        assert f.read_bytes() in brand_bytes, f"unexpected image {f}"
 print("built", out, "links:", AUDIT, XENG)
