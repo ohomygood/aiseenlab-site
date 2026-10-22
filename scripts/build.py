@@ -91,8 +91,6 @@ function setLang(l){{document.documentElement.lang=l==='zh'?'zh-CN':'en';try{{lo
   X-Frame-Options: DENY
   Permissions-Policy: camera=(), microphone=(), geolocation=()
 """)
-# www -> apex (only matters once www.aiseenlab.com is attached); pages.dev host stays as-is
-(out / "_redirects").write_text("")
 low = html.lower()
 assert "wechat" not in low and "微信" not in html and "qr" not in low and "<img" not in low, "forbidden content"
 print("built", out, "links:", AUDIT, XENG)
